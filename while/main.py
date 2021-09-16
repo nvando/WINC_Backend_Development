@@ -7,27 +7,20 @@ __human_name__ = "while"
 # returns the requested number of unique koala facts in a list
 def unique_koala_facts(num_unique_facts):
     unique_facts = []
-    requested_facts = 0
     facts_added = 0
 
     # keep requesting facts until 1000 request have been made
+    requested_facts = 0
     while requested_facts < 1000:
         requested_facts += 1
         new_fact = random_koala_fact()
 
-        # check wheather fact is unique, if already in list,
-        # stop checking an set is_unique to false
-        is_unique = True
-        for fact in unique_facts:
-            if fact == new_fact:
-                is_unique = False
-                break
-
-        # add fact to list if it is unique and count unique facts
-        if is_unique:
+        # check wheather fact is unique
+        # and add fact to list
+        # and count unique facts
+        if new_fact not in unique_facts:
             unique_facts.append(new_fact)
             facts_added += 1
-            print(facts_added)
 
         # stop requesting facts when number of added facts equeals input number
         if facts_added == num_unique_facts:
@@ -45,7 +38,7 @@ def num_joey_facts():
     num_joey_facts = 0
 
     # request facts from database
-    while True:
+    while flag_counter < 10:
         new_fact = random_koala_fact()
         # if the fact equals the flag fact, add to counter
         if new_fact == flag_fact:
@@ -57,9 +50,6 @@ def num_joey_facts():
                 # count fact and add fact to list
                 num_joey_facts += 1
                 joey_facts.append(new_fact)
-        # stop requesting facts if flag is seen 10 times
-        if flag_counter == 10:
-            break
 
     return num_joey_facts
 
@@ -81,6 +71,6 @@ def koala_weight():
 # It is not run if you import this file as a module.
 if __name__ == "__main__":
     # print(random_koala_fact())
-    # print(unique_koala_facts(5))
+    print(unique_koala_facts(5))
     print(num_joey_facts())
     print(koala_weight())
