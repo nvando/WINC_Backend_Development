@@ -2,6 +2,7 @@ __winc_id__ = "ae539110d03e49ea8738fd413ac44ba8"
 __human_name__ = "files"
 
 
+from os import path
 import pathlib
 import shutil
 from zipfile import ZipFile
@@ -24,8 +25,9 @@ def clean_cache():
     """
 
     if CACHE_PATH.exists():
-        # using shutill as it can remove a directory which contains files/folders
-        shutil.rmtree(CACHE_PATH)
+        shutil.rmtree(
+            CACHE_PATH
+        )  # using shutill as it can remove a dir which contains files/folders
         print("Deleting existing cache folder.")
 
     CACHE_PATH.mkdir()
@@ -48,7 +50,7 @@ def cached_files():
     Returns a list of all the files in the cache, excludes possible folders.
     """
     data_files = [
-        (file_path) for file_path in CACHE_PATH.iterdir() if file_path.is_file()
+        file_path for file_path in CACHE_PATH.iterdir() if file_path.is_file()
     ]
 
     return data_files
@@ -75,15 +77,12 @@ if __name__ == "__main__":
     print(find_password(data_files))
 
 
-# Tried to create cache and zipfile paths,
-# which were relative to files/main.py (script) location.
-# instead dof being relative to the 'current directory'.
-# The 'current directory' can change depending on where invoking python and wincpy from,
-# while data.zip and 'cache' folder need to be in same folder as files/main.py (the files folder)
-
-# The below will create the cache folder en read data.zip no matter from where you run your script
-# but unfortunatly Wincpy runs into errors when it's checks this code
-
-# SCRIPT_DIRECTORY = pathlib.Path(__file__).parent.absolute()
-# CACHE_PATH = SCRIPT_DIRECTORY / "cache"
-# ZIP_PATH = SCRIPT_DIRECTORY / "data.zip"
+# The Wincpy program doesn't accept above code as a proper solution as
+# cached_files() returns a list of path objects instead of strings.
+# This can be resoled by converting 'file_path' in line 53 into a string,
+# before adding it to the list (str(file_path)).
+# Consequently, within the function find_password,
+# the file_path string then needs to converted back to a path object (file_path = pathlib.Path(file_path)),
+# before opening the file in text mode.
+# Wincpy will than accept this code as a solution,
+# but the additional converting seems cumbersome and unneccesary.
