@@ -42,28 +42,34 @@ class Commentator:
         # returns the name of the player that scores the highest
         # on the attribute argument. If the players score equally,
         # return the player that has the highest strength.
-        # If these are also equal, report the player
+        # If these are also equal, reports the player
         # who has the highest total score according to sum_player.
-        if getattr(player1, attribute) > getattr(player2, attribute):
+        attribute_player1 = getattr(player1, attribute)
+        attribute_player2 = getattr(player2, attribute)
+        if attribute_player1 > attribute_player2:
             return player1.name
-        if getattr(player1, attribute) < getattr(player2, attribute):
+        elif attribute_player1 < attribute_player2:
             return player2.name
         else:
-            if player1.strength()[1] > player2.strength()[1]:
+            strength_player1 = player1.strength()[1]
+            strength_player2 = player2.strength()[1]
+            if strength_player1 > strength_player2:
                 return player1.name
-            if player1.strength()[1] < player2.strength()[1]:
+            if strength_player1 < strength_player2:
                 return player2.name
             else:
-                if self.sum_player(player1) < self.sum_player(player2):
+                sum_player1 = self.sum_player(player1)
+                sum_player2 = self.sum_player(player2)
+                if sum_player1 > sum_player2:
                     return player1.name
-                if self.sum_player(player1) < self.sum_player(player2):
+                if sum_player1 < sum_player2:
                     return player2.name
                 else:
                     return "These two players might as well be twins!"
 
 
 if __name__ == "__main__":
-    player1 = Player("Bob", 0.1, 0.5, 0.8)
+    player1 = Player("Bob", 0.1, 0.6, 0.9)
     player2 = Player("Rita", 0.1, 0.5, 0.8)
     print(player2.introduce())
     print(player2.strength())
