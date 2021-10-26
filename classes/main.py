@@ -55,14 +55,14 @@ class Commentator:
             strength_player2 = player2.strength()[1]
             if strength_player1 > strength_player2:
                 return player1.name
-            if strength_player1 < strength_player2:
+            elif strength_player1 < strength_player2:
                 return player2.name
             else:
                 sum_player1 = self.sum_player(player1)
                 sum_player2 = self.sum_player(player2)
                 if sum_player1 > sum_player2:
                     return player1.name
-                if sum_player1 < sum_player2:
+                elif sum_player1 < sum_player2:
                     return player2.name
                 else:
                     return "These two players might as well be twins!"
