@@ -89,3 +89,33 @@ print(show_contracts(alfred))
 # bv als je lijst binnen de class stopt, moet je class aanpassen als probleem veranderd
 # bijv. vinden van max ipv van min rate
 # dit zou voor issues zorgen als je samenwerkt and andere gebruikendezelfde lijst
+# Beste optie om code uit te breiden in toekomst (ie functionailteit buiten classes),
+# is niet altijd de meest elegante of kortse oplossing (fucntionaliteit inside classes)
+# zie ook: https://stackoverflow.com/questions/4831307/is-it-bad-to-store-all-instances-of-a-class-in-a-class-field
+
+
+# The typical way of keeping track of all instances created with the class,
+# is to use a factory class with methods that instanciate the class and return the objects.
+# That way you have a centralize point to control the instantiations.
+# Make the factory put each object of a certain type in a list after creating them.
+
+
+class AllPainters(list):
+    # factory method: creert de instance ipv een constructor method (__init__)
+    def create_painter(self, name, rate):
+        painter = Painter(name, rate)
+        self.append(painter)  # adds and instance to the list
+        return painter  # returns the instance
+
+
+class Painter:
+    def __init__(self, name, rate):
+        self.name = name
+        self.rate = rate
+
+
+all_painters = AllPainters()
+bob = all_painters.create_painter("Bob Bobsville", 145)
+berry = all_painters.create_painter("Berry Berryville", 169)
+print(bob.name, bob.rate)
+print(all_painters)
