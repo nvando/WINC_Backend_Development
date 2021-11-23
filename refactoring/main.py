@@ -12,61 +12,54 @@ class Homeowner:
         self.contracts = []
         for need in self.needs:
             if need == "electrician":
-                self.contracts.append(Electrician.cheapest())
+                self.contracts.append(Electrician.find_cheapest())
             elif need == "painter":
                 print("needs painter")
-                self.contracts.append(Painter.cheapest())
+                self.contracts.append(Painter.find_cheapest())
             elif need == "plumber":
-                self.contracts.append(Plumber.cheapest())
+                self.contracts.append(Plumber.find_cheapest())
         return self.contracts
 
 
 class Specialist:
+    all_specialists = []
+
     def __init__(self, name, rate):
         self.name = name
         self.rate = rate
+        self.all_specialists.append(self)
+        print(f"added {self.name} to list")
+
+    @classmethod
+    def find_cheapest(cls):
+        specialists_filtered = [
+            specialist
+            for specialist in cls.all_specialists
+            if cls.__name__ == specialist.__class__.__name__
+        ]
+        return min(specialists_filtered, key=lambda specialist: specialist.rate).name
 
 
 class Electrician(Specialist):
     profession = "electrician"
-    all_electricians = []
+    all_specialists = []
 
     def __init__(self, name, rate):
         super().__init__(name, rate)
-        Electrician.all_electricians.append(self)
-        print(f"added {self.name} to list")
-
-    @classmethod
-    def cheapest(cls):
-        return min(cls.all_electricians, key=lambda electrician: electrician.rate).name
 
 
 class Painter(Specialist):
     profession = "painter"
-    all_painters = []
 
     def __init__(self, name, rate):
         super().__init__(name, rate)
-        Painter.all_painters.append(self)
-        print(f"added {self.name} to list")
-
-    @classmethod
-    def cheapest(cls):
-        return min(cls.all_painters, key=lambda painter: painter.rate).name
 
 
 class Plumber(Specialist):
     profession = "plumber"
-    all_plumbers = []
 
     def __init__(self, name, rate):
         super().__init__(name, rate)
-        Plumber.all_plumbers.append(self)
-        print(f"added {self.name} to list")
-
-    @classmethod
-    def cheapest(cls):
-        return min(cls.all_plumbers, key=lambda plumber: plumber.rate).name
 
 
 alice = Electrician("Alice Aliceville", 150)
@@ -81,57 +74,8 @@ bert = Homeowner("Bert Bertson", "Bertslane 231", ["plumber"])
 candy = Homeowner("Candy Candison", "Candylane 312", ["electrician", "painter"])
 
 print(f"alfred's full name is {alfred.name}")
-print(f"The cheapest electrician is {Electrician.cheapest()}")
+print(f"The cheapest electrician is {Electrician.find_cheapest()}")
 print(alfred.contracts())
-print
-
-
-# professionals
-# alice_name = 'Alice Aliceville'
-# alice_profession = 'electrician'
-# bob_name = 'Bob Bobsville'
-# bob_profession = 'painter'
-# craig_name = 'Craig Craigsville'
-# craig_profession = 'plumber'
-
-# homeowners
-# alfred_name = 'Alfred Alfredson'
-# alfred_address = 'Alfredslane 123'
-# alfred_needs = ['painter', 'plumber']
-# bert_name = 'Bert Bertson'
-# bert_address = 'Bertslane 231'
-# bert_needs = ['plumber']
-# candice_name = 'Candice Candicedottir'
-# candice_address = 'Candicelane 312'
-# candice_needs = ['electrician', 'painter']
-
-# alfred_contracts = []
-# for need in alfred_needs:
-#     if need == alice_profession:
-#         alfred_contracts.append(alice_name)
-#     elif need == bob_profession:
-#         alfred_contracts.append(bob_name)
-#     elif need == craig_profession:
-#         alfred_contracts.append(craig_name)
-
-# bert_contracts = []
-# for need in bert_needs:
-#     if need == alice_profession:
-#         bert_contracts.append(alice_name)
-#     elif need == bob_profession:
-#         bert_contracts.append(bob_name)
-#     elif need == craig_profession:
-#         bert_contracts.append(craig_name)
-
-# candice_contracts = []
-# for need in candice_needs:
-#     if need == alice_profession:
-#         candice_contracts.append(alice_name)
-#     elif need == bob_profession:
-#         candice_contracts.append(bob_name)
-#     elif need == craig_profession:
-#         candice_contracts.append(craig_name)
-
-# print("Alfred's contracts:", alfred_contracts)
-# print("Bert's contracts:", bert_contracts)
-# print("Candice's contracts:", candice_contracts)
+print(Electrician.find_cheapest())
+print(Painter.find_cheapest())
+print(Plumber.find_cheapest())
