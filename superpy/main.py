@@ -1,12 +1,18 @@
 # Imports
+import sys
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+import calendar
 from pathlib import Path
-import pandas as pd
 from tabulate import tabulate
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
 import parsers
 from track_date import TODAY
-import sys
+from ledger import Ledger
+
 
 # Do not change these lines.
 __winc_id__ = "a2bc36ea784242e4989deb157d527ba0"
@@ -15,26 +21,30 @@ __human_name__ = "superpy"
 
 BOUGHT_PATH = Path("bought.csv")
 SOLD_PATH = Path("sold.csv")
+REPORTS_PATH = Path("reports")  # create folder for storing excel and pdf reports, if not exists
+REPORTS_PATH.mkdir(parents=True, exist_ok=True)
 
-# set current date as today when opening file for first time,
-# and write it to today.csv
-# otherwise read today.csv to retrieve current date
+
+#######################################################################################
 
 
 def set_date(date_obj):
 
-    with open("today.csv", "w") as file:
+    with open("today.csv", "w+") as file:
         writer = csv.writer(file)
         writer.writerow(["todays_date", date_obj])
 
 
 def advance_time(today, no_of_days):
-    # moved defining of global TODAY into main()
+    # moved defining of global TODAY into ()
     # as easier to test outside this function
 
     today += timedelta(days=(int(no_of_days)))
     set_date(today)
     return today
+
+
+#######################################################################################
 
 
 def create_csv(path, headings):
@@ -143,64 +153,52 @@ def sell_product(
             quantity -= 1
 
 
-def show_inventory(inventory_date, b_path=BOUGHT_PATH, s_path=SOLD_PATH):
+def get_report(report_month, report_func, product=None):
 
-    # quit program when bought.csv has not been created
-    if not b_path.is_file():
-        print("No products bought yet: inventory is empty")
-        sys.exit()
+    no_days_in_month = calendar.monthrange(report_month.year, report_month.month)[1]
 
-    # if sold.csv not yet created set list of sold_id's to empty
-    elif not s_path.is_file():
-        sold_ids = []
+    # for each day in month
+    # calculate profit or revenue (output)
+    daily_output = []
+    for day in range(1, no_days_in_month + 1):
+        if product is None:
+            output = report_func(date(report_month.year, report_month.month, day))
+        else:
+            output = report_func(date(report_month.year, report_month.month, day), product)
+        daily_output.append([day, output])
 
-    # grab id's of products that have been sold
-    # up to inventory date
+    df = pd.DataFrame(daily_output)
+
+    return df
+
+
+def df_to_plot(df, overview_month):
+
+    if len(df.columns) == 2:
+        y = str(df.columns[1]).lower()
     else:
-        with open(s_path, "r", newline="") as sold_file:
-            sold_reader = csv.reader(sold_file)
+        y = f"{df.columns[1]} and {df.columns[2]}".lower()
 
-            next(sold_reader)  # skip headers
-            sold_ids = [
-                row[1]
-                for row in sold_reader
-                if datetime.strptime(row[2], "%Y-%m-%d").date() <= inventory_date
-            ]
+    fig, ax = plt.subplots()
 
-    # add product from bought.csv to inventory
-    # if product has not been sold
-    # if it had already been bought on the inventory date
-    # if it has not expired
-    with open(b_path, "r", newline="") as bought_file:
+    df.plot(
+        kind="line",
+        ax=ax,
+        alpha=0.450,
+        x="Day",
+        ylabel="Euro",
+        title=f"Showing daily {y} for {overview_month.strftime('%B')} {overview_month.year}",
+    )
 
-        bought_reader = csv.reader(bought_file)
-        headers = next(bought_reader)
-
-        inventory = []
-        for row in bought_reader:
-            if (
-                row[0] not in sold_ids
-                and datetime.strptime(row[2], "%Y-%m-%d").date() <= inventory_date
-                and datetime.strptime(row[4], "%Y-%m-%d").date() >= inventory_date
-            ):
-                inventory.append(row)
-        df = pd.DataFrame(inventory)
-
-    # return df and print outside function in at call-site
-    # (arg.command if statement)
-    # so that it is possible to verify dataframe with testing
-    # otherwise printing would be a side effect of this fucntion
-    # and hard to test
-
-    return df, headers
+    return fig, ax
 
 
 # ---------------------------------------------------------------------------------------------------
 
+# everything below this statement won't be executed when file is imported
+# for instance when importing main in test_file
 
-def main():
-    global TODAY
-
+if __name__ == "__main__":
     # create super_parser by running the imported create parser function
     args = parsers.create_super_parser()
 
@@ -221,17 +219,123 @@ def main():
             args.quantity,
         )
 
-    if args.command == "report":
-        if args.type_of_report == "inventory":
-            df, headers = show_inventory(args.date_of_report)
-            print(
-                tabulate(
-                    df,
-                    headers=headers,
-                    tablefmt="psql",
-                    showindex=False,
-                )
+    if args.command == "show-inventory":
+        ledger = Ledger(BOUGHT_PATH, SOLD_PATH)
+        df, headers = ledger.show_inventory(args.date)
+        print(
+            tabulate(
+                df,
+                headers=headers,
+                tablefmt="psql",
+                showindex=False,
             )
+        )
+        if args.to_excel:
+
+            filename = f"Inventory on {args.date}.xlsx"
+            df.to_excel(REPORTS_PATH / filename, index=False)
+            print(f"Inventory saved as '{filename}' in Superpy/reports folder")
+
+    if args.command == "report-total":
+        # create ledger of all products and
+        # call revenue or profit method for specified date or period
+        ledger = Ledger(BOUGHT_PATH, SOLD_PATH)
+
+        if args.type_of_report == "revenue":
+            if args.day:
+                print(ledger.get_revenue_day(args.day))
+            elif args.month:
+                print(ledger.get_revenue_month(args.month))
+            elif args.year:
+                print(ledger.get_revenue_year(args.year))
+            else:
+                print(
+                    """Set reporting period with --day, --month or --year, 
+                    then enter date in format (YYYY-MM-DD),(YYYY-MM) or (YYYY) respectively"""
+                )
+
+        if args.type_of_report == "profit":
+            if args.day:
+                print(ledger.get_profit_day(args.day))
+            elif args.month:
+                print(ledger.get_profit_month(args.month))
+            elif args.year:
+                print(ledger.get_profit_year(args.year))
+            else:
+                print(
+                    """Set reporting period with --day, --month or --year, 
+                    then enter date in format (YYYY-MM-DD),(YYYY-MM) or (YYYY) respectively"""
+                )
+
+    if args.command == "show-product":
+        product = Ledger(BOUGHT_PATH, SOLD_PATH).show_product(args.product_id)
+        print(
+            f"\n Product ID: {product.bought_id}\n",
+            f"Product name: {product.name}\n",
+            f"Product bought on: {product.buy_date}\n",
+            f"Product bought for: ${product.buy_price}\n",
+            f"Product expires on: {product.expiration}",
+        )
+        if product.sold_id is not None:
+            print(
+                f"\n Product sold on: {product.sell_date}\n",
+                f"Product sold for: ${product.sell_price}\n",
+            )
+        elif product.expiration < TODAY:
+            print("PRODUCT EXPIRED")
+        else:
+            print("\n Product not sold yet\n")
+
+    if args.command == "report-overtime":
+        ledger = Ledger(BOUGHT_PATH, SOLD_PATH)
+        if args.type_of_report == "revenue":
+            df = get_report(args.report_month, ledger.get_revenue_day)
+            df.columns = ["Day", "Revenue"]
+        elif args.type_of_report == "profit":
+            df = get_report(args.report_month, ledger.get_profit_day)
+            df.columns = ["Day", "Profit"]
+        elif args.type_of_report == "revenue-profit":
+            df_revenue = get_report(args.report_month, ledger.get_revenue_day)
+            df_profit = get_report(args.report_month, ledger.get_profit_day)
+            df = pd.concat([df_revenue, df_profit.iloc[:, 1]], axis=1)
+            df.columns = ["Day", "Revenue", "Profit"]
+        elif args.type_of_report == "product-sales":
+            if args.product is None:
+                print(
+                    "Error: Missing required argument '--product'. Please enter '--product' followed by the product you want to report on"
+                )
+                sys.exit()
+            else:
+                df = get_report(args.report_month, ledger.get_product_sales, args.product)
+                df.columns = ["Day", f"{args.product} sales"]
+
+        print(
+            tabulate(
+                df,
+                headers=df.columns,
+                tablefmt="psql",
+                showindex=False,
+            )
+        )
+
+        fig, ax = df_to_plot(df, args.report_month)
+
+        if args.to_pdf:
+            filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.pdf"
+            fig.savefig(REPORTS_PATH / filename)
+            print(f"Figure saved as '{filename}' in Superpy/reports folder")
+
+        if args.to_jpeg:
+            filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.jpg"
+            fig.savefig(REPORTS_PATH / filename)
+            print(f"Figure saved as '{filename}' in Superpy/reports folder")
+
+        if args.to_excel:
+            filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.xlsx"
+            df.to_excel(REPORTS_PATH / filename, index=False)
+            print(f"Table saved as '{filename}' in Superpy/reports folder")
+
+        plt.show()
 
     if args.command == "show-date":
         print(f"The system has today's date stored as {TODAY}")
@@ -241,9 +345,36 @@ def main():
         print(f"The program's date has been changed to {TODAY}")
 
     if args.command == "set-date":
-        set_date(args.date_to_set)
-        print(f"The program's date has been set to {TODAY}")
+        TODAY = set_date(args.date_to_set)
+        print(f"The program's date has been set to {args.date_to_set}")
 
 
-if __name__ == "__main__":
-    main()
+# three technical features:
+# testable code
+# making code testable by leaving print statements outside functions
+#   (for instance, return df in show_inventory method
+#   and print he df outside function in at call-site,
+#   so that it is possible to verify dataframe with testing,
+#   otherwise printing would be a side effect of this function and hard to test)
+# and by not hardcoding the file paths into the function but giving them as parameters
+# so we can test the fucntions with a dummy FileDescriptor
+
+# creating subparsers:
+# adding subparsers so that for each command we can define which named arguments are required.
+# For instance with the 'buy' command,
+# one is promted to always enter product_name, buy_date, buy_price and expiration date.
+# each argument can also be tested seperately for being of the right type,
+# which makes it easy to test whether dates are entered correctly
+# and above all, makes sure the csv date files don't hold faulty dates or data fields
+
+# creating a class Product and a collection class Ledgers:
+# The class Ledger has a 'get_product' method which loads the info the csv files
+# and creates a product instance for each row.
+# These product instances are then loaded into an instance list using the collection class Ledger.
+# On this list one can invoke the class methods such as show revenue or profit.
+# why useful??
+
+
+# still to do:
+# load inventorys into csv or pdf's
+# another feature?
