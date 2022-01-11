@@ -1,5 +1,5 @@
 import argparse
-from track_date import valid_date
+from track_date import valid_date, valid_month, valid_year
 
 
 def create_super_parser():
@@ -85,20 +85,92 @@ def create_super_parser():
         type=int,
         help="Enter number of products sold on the same date for the same price, default = 1",
     )
-    # subparser for report command
-    report_parser = subparsers.add_parser(
-        "report",
-        help="""reports on inventory or revenue""",
-    )
-    report_parser.add_argument(
-        "type_of_report",  # argparse won't allow use of word 'report-type'
-        choices=["inventory", "revenue"],
-        help="choose type of report",
-    )
-    report_parser.add_argument(
-        "date_of_report",
+
+    # subparser for show-inventory command
+    inventory_parser = subparsers.add_parser("show-inventory", help="reports on inventory")
+    inventory_parser.add_argument(
+        "date",
         type=valid_date,
-        help="Enter report date in format YYYY-MM-DD, default is 'today",
+        help="Enter report date as today, yesterday or as format YYYY-MM-DD, default = 'today",
+    )
+
+    inventory_parser.add_argument(
+        "--to-excel",
+        action="store_true",  #  sets arg.to-excel as True: can be used to enable a feature
+        help="Save inventory as Excel spreadsheet",
+    )
+
+    # --------------------------------------------------------------------------------------------------------------------
+    # subparser for report-total command
+    report_total_parser = subparsers.add_parser(
+        "report-total",
+        help="""report total revenue or profit for a given day, month or year""",
+    )
+    report_total_parser.add_argument(
+        "type_of_report",  # argparse won't allow use of word 'report-type'
+        choices=["revenue", "profit"],
+        help="choose type of report. Then choose and set reporting period with --date, --month or --year",
+    )
+
+    report_total_parser.add_argument(
+        "--day",
+        type=valid_date,
+        help="Enter report date as today, yesterday or as format YYYY-MM-DD, default = 'today",
+    )
+
+    report_total_parser.add_argument(
+        "--month", type=valid_month, help="Enter report month in format YYYY-MM"
+    )
+    report_total_parser.add_argument(
+        "--year", type=valid_year, help="Enter the year for which you want a report in format YYYY"
+    )
+
+    # --------------------------------------------------------------------------------------------------------------------
+    # subparser for report-overtime command
+    report_overtime = subparsers.add_parser(
+        "report-overtime",
+        help="""plots daily revenue or profit over given month""",
+    )
+    report_overtime.add_argument(
+        "type_of_report",  # argparse won't allow use of word 'report-type'
+        choices=["revenue", "profit", "revenue-profit", "product-sales"],
+        help="choose which type of income to plot",
+    )
+
+    report_overtime.add_argument(
+        "report_month", type=valid_month, help="Enter month in format YYYY-MM"
+    )
+
+    report_overtime.add_argument(
+        "--product", help="Enter the name of product you want to see sales of"
+    )
+
+    report_overtime.add_argument(
+        "--to-excel",
+        action="store_true",  #  sets arg.to-excel as True:  can be used to enable a feature
+        help="Save plot data as table in as Excel spreadsheet",
+    )
+
+    report_overtime.add_argument(
+        "--to-pdf",
+        action="store_true",  #  sets arg.to-excel as True: can be used to enable a feature
+        help="Save figure as PDF",
+    )
+
+    report_overtime.add_argument(
+        "--to-jpeg",
+        action="store_true",  #  sets arg.to-excel as True: can be used to enable a feature
+        help="Save figure as JPEG image",
+    )
+
+    # ---------------------------------------------------------------------------------------------------------------------------
+
+    # subparser for info command
+    info_parser = subparsers.add_parser("show-product")
+    info_parser.add_argument(
+        "product_id",
+        type=int,
+        help="Enter the id assigned to the product when bought (bought_id)",
     )
 
     # subparser for advance-date command
@@ -121,8 +193,6 @@ def create_super_parser():
         help="Enter date in format YYYY-MM-DD",
     )
     # subparser for show-date command
-    subparsers.add_parser(
-        "show-date",
-    )
+    subparsers.add_parser("show-date")
 
     return super_parser.parse_args()
