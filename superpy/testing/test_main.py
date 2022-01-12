@@ -1,9 +1,14 @@
-from datetime import date
+import sys
+
+sys.path.append("../superpy")
 from main import *
+
+from datetime import date
 import os
-from pathlib import Path
 import pytest
 from example_products import *
+from ledger import Ledger
+import pandas as pd
 
 
 # Fixture to execute after each test is run:
@@ -120,7 +125,7 @@ def test_buy_product_existing_file_multiple_products():
 
 def test_sell_product_new_file_single_product():
 
-    # test with no existing file and product quantity = 1
+    # test with no existing sold file and product quantity = 1
     init_test_bought_csv()
 
     sell_product("apple", date(2021, 12, 8), 3.5, 1, B_PATH, S_PATH)
@@ -136,7 +141,7 @@ def test_sell_product_new_file_single_product():
 
 
 def test_sell_product_new_file_multiple_products():
-    # test with no exiting file and product quantity = 3
+    # test with no existing sold file and product quantity = 3
 
     init_test_bought_csv()
 
@@ -156,7 +161,7 @@ def test_sell_product_new_file_multiple_products():
 
 def test_sell_product_existing_file_single_product():
 
-    # test with no existing file and product quantity = 1
+    # test with existing sold file and product quantity = 1
     init_test_bought_csv()
     init_test_sold_csv()
 
@@ -231,3 +236,28 @@ def test_sell_product_existing_file_out_of_stock_multiple_products():
 
 
 ############################################################################
+
+
+def test_get_report_with_profit():
+
+    init_test_bought_csv()
+    init_test_sold_csv()
+    ledger = Ledger(B_PATH, S_PATH)
+
+    # get_report takes as arguments:
+    # a report_month as dateobject,
+    # a report function (get_profit_day, get_revenue_day, get_product_sales)
+    # and a product name if report_func is set to 'get_product_sales')
+    # and returns a df
+
+    test_df = get_report(date(2021, 12, 1), ledger.get_revenue_day)
+    test_df_aslist = test_df[1].tolist()
+
+    assert isinstance((test_df), pd.DataFrame)
+    assert len(test_df_aslist) == 31
+    assert test_df_aslist == [
+        0,0,0,0,4.5,2.5,1,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0
+        ]  # fmt: skip

@@ -1,8 +1,12 @@
-from datetime import date
 import pytest
+import os
+import sys
+
+sys.path.append("../superpy")
+
 from example_products import *
 from ledger import Product, Ledger
-import os
+from datetime import date
 
 
 @pytest.fixture(autouse=True)
