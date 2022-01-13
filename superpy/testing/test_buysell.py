@@ -1,21 +1,24 @@
-import sys
-
-sys.path.append("../superpy")
-from main import *
-
-from datetime import date
+# library imports
 import os
+import sys
 import pytest
+from datetime import date
+
+# application imports
+sys.path.append("../superpy")  # workaround to make tests work from within testing subfolder
+from buysell import create_csv, buy_product, sell_product
 from example_products import *
-from ledger import Ledger
-import pandas as pd
 
 
-# Fixture to execute after each test is run:
-# If test csv files are created in a test function
-# this makes sure they are cleaned up even if the test failes
 @pytest.fixture(autouse=True)
-def run_after_tests(tmpdir):
+def run_after_tests():
+    # Fixture to execute after each test is run:
+    # creates test csv files before running each function
+    # and cleanes them up afterwards
+
+    # Setup:
+    init_test_bought_csv()
+    init_test_sold_csv()
 
     yield  # this is where the testing happens
 
@@ -24,27 +27,6 @@ def run_after_tests(tmpdir):
         os.remove(B_PATH)
     if os.path.isfile(S_PATH):
         os.remove(S_PATH)
-
-
-############################################################################
-# tests for date manipulation functions
-
-
-def test_set_date():
-    set_date(date(2021, 12, 7))
-
-    with open("today.csv", "r") as file:
-        line = file.readline()
-
-    assert line == "todays_date,2021-12-07\n"
-
-
-def test_advance_time():
-
-    today = date(2021, 12, 7)
-    assert advance_time(today, 3) == date(2021, 12, 10)
-    assert advance_time(today, "2") == date(2021, 12, 9)
-    assert advance_time(today, -2) == date(2021, 12, 5)
 
 
 ############################################################################
@@ -70,6 +52,8 @@ def test_create_csv():
 
 def test_buy_product_new_file_single_product():
 
+    os.remove(B_PATH)
+
     # test with no existing file and product quantity = 1
     buy_product("apple", date(2021, 10, 1), 2.3, date(2021, 12, 12), 1, B_PATH)
     with open(B_PATH, "r") as file:
@@ -79,6 +63,9 @@ def test_buy_product_new_file_single_product():
 
 
 def test_buy_product_new_file_multiple_products():
+
+    os.remove(B_PATH)
+
     # test with no exiting file and product quantity = 3
     buy_product("apple", date(2021, 10, 1), 2.3, date(2021, 12, 12), 3, B_PATH)
     with open(B_PATH, "r") as file:
@@ -91,8 +78,6 @@ def test_buy_product_new_file_multiple_products():
 
 def test_buy_product_existing_file_single_product():
 
-    init_test_bought_csv()
-
     buy_product("apple", date(2021, 10, 1), 2.3, date(2021, 12, 12), 1, B_PATH)
 
     # test whether product is added as row 10, after existing product on row 9
@@ -103,9 +88,6 @@ def test_buy_product_existing_file_single_product():
 
 
 def test_buy_product_existing_file_multiple_products():
-
-    # initialize 'dummy' csv-file to test with 10 rows
-    init_test_bought_csv()
 
     # test if multiple rows are added after existing row 9
     # if quantity > 1
@@ -126,7 +108,7 @@ def test_buy_product_existing_file_multiple_products():
 def test_sell_product_new_file_single_product():
 
     # test with no existing sold file and product quantity = 1
-    init_test_bought_csv()
+    os.remove(S_PATH)
 
     sell_product("apple", date(2021, 12, 8), 3.5, 1, B_PATH, S_PATH)
 
@@ -141,9 +123,9 @@ def test_sell_product_new_file_single_product():
 
 
 def test_sell_product_new_file_multiple_products():
-    # test with no existing sold file and product quantity = 3
 
-    init_test_bought_csv()
+    # test with no existing sold file and product quantity = 3
+    os.remove(S_PATH)
 
     sell_product("apple", date(2021, 12, 8), 3.5, 3, B_PATH, S_PATH)
 
@@ -162,9 +144,6 @@ def test_sell_product_new_file_multiple_products():
 def test_sell_product_existing_file_single_product():
 
     # test with existing sold file and product quantity = 1
-    init_test_bought_csv()
-    init_test_sold_csv()
-
     sell_product("apple", date(2021, 12, 8), 3.5, 1, B_PATH, S_PATH)
 
     # test whether product gets added to inventory
@@ -182,9 +161,6 @@ def test_sell_product_existing_file_single_product():
 def test_sell_product_existing_file_multiple_product():
 
     # test with existing 'sold' file and product quantity > 1
-    init_test_bought_csv()
-    init_test_sold_csv()
-
     sell_product("apple", date(2021, 12, 8), 3.5, 2, B_PATH, S_PATH)
 
     with open(S_PATH, "r") as file:
@@ -202,9 +178,6 @@ def test_sell_product_existing_file_out_of_stock_single_product():
     # when trying to buy a single product, which is not in stock
     # test with existing 'sold' file
 
-    init_test_bought_csv()
-    init_test_sold_csv()
-
     # If product to be sold is not in inventory,
     # sys.exit() gets called in main.py and raises SystemExit error.
     # Below test checks for this exception,
@@ -220,44 +193,13 @@ def test_sell_product_existing_file_out_of_stock_multiple_products():
     # when trying to buy multiple products, of which two are not in stock
     # test with existing 'sold' file
 
-    init_test_bought_csv()
-    init_test_sold_csv()
-
     with pytest.raises(SystemExit) as wrapped_exception:
         sell_product("pear", date(2021, 12, 8), 3.5, 3, B_PATH, S_PATH)
         assert wrapped_exception.type == SystemExit
 
     # also test whether 'sell' call has still logged
-    # the one product (out of three that was in stock as sold
+    # the one product (out of three that was in stock) as sold
     with open(S_PATH, "r") as file:
         lines = file.readlines()
         assert lines[0] == "id,bought_id,sell_date,sell_price\n"
         assert lines[5] == "5,8,2021-12-08,3.5\n"
-
-
-############################################################################
-
-
-def test_get_report_with_profit():
-
-    init_test_bought_csv()
-    init_test_sold_csv()
-    ledger = Ledger(B_PATH, S_PATH)
-
-    # get_report takes as arguments:
-    # a report_month as dateobject,
-    # a report function (get_profit_day, get_revenue_day, get_product_sales)
-    # and a product name if report_func is set to 'get_product_sales')
-    # and returns a df
-
-    test_df = get_report(date(2021, 12, 1), ledger.get_revenue_day)
-    test_df_aslist = test_df[1].tolist()
-
-    assert isinstance((test_df), pd.DataFrame)
-    assert len(test_df_aslist) == 31
-    assert test_df_aslist == [
-        0,0,0,0,4.5,2.5,1,0,
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0
-        ]  # fmt: skip

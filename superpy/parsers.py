@@ -3,13 +3,17 @@ from track_date import valid_date, valid_month, valid_year
 
 
 def create_super_parser():
-    # this function creates subparsers for the commands buy, sell and report
-    # and for show, set and advance date
-    # Each sub-command then has it's own arguments,
-    # which are either required or have a default value
-    # The arguments of each can be checked for type.
-    # The date arguments are validated by the valid_date function,
-    # imported from the track_date module
+    """ 
+    This function creates the argument parser 'super_parser'.
+    The following commands are added as subparsers: 
+        buy /sell / show-product / show-inventory / report-total / report-overtime / 
+        show-date / set-date / advance-time
+    Each sub-command int turn has it's own arguments,
+    which are either required or have a default values set. 
+    The arguments for each subcommand can be checked for type.
+    The date arguments are validated through the valid_date function,imported from the track_date module
+    The arguments are then parsed with parse_args and returned as object attributes"""
+   
 
     super_parser = argparse.ArgumentParser(description="Keep track of supermarket inventory")
     subparsers = super_parser.add_subparsers(dest="command", help="Sub-commands")
@@ -86,6 +90,17 @@ def create_super_parser():
         help="Enter number of products sold on the same date for the same price, default = 1",
     )
 
+    # --------------------------------------------------------------------------------------------------------------------
+
+    # subparser for show-product command
+    product_parser = subparsers.add_parser("show-product")
+    product_parser.add_argument(
+        "product_id",
+        type=int,
+        help="Enter the id assigned to the product when bought (bought_id)",
+    )
+
+
     # subparser for show-inventory command
     inventory_parser = subparsers.add_parser("show-inventory", help="reports on inventory")
     inventory_parser.add_argument(
@@ -101,6 +116,7 @@ def create_super_parser():
     )
 
     # --------------------------------------------------------------------------------------------------------------------
+    
     # subparser for report-total command
     report_total_parser = subparsers.add_parser(
         "report-total",
@@ -126,6 +142,7 @@ def create_super_parser():
     )
 
     # --------------------------------------------------------------------------------------------------------------------
+    
     # subparser for report-overtime command
     report_overtime = subparsers.add_parser(
         "report-overtime",
@@ -165,14 +182,7 @@ def create_super_parser():
 
     # ---------------------------------------------------------------------------------------------------------------------------
 
-    # subparser for info command
-    info_parser = subparsers.add_parser("show-product")
-    info_parser.add_argument(
-        "product_id",
-        type=int,
-        help="Enter the id assigned to the product when bought (bought_id)",
-    )
-
+ 
     # subparser for advance-date command
     advance_parser = subparsers.add_parser(
         "advance-time",
@@ -194,5 +204,7 @@ def create_super_parser():
     )
     # subparser for show-date command
     subparsers.add_parser("show-date")
+
+    # ---------------------------------------------------------------------------------------------------------------------------
 
     return super_parser.parse_args()

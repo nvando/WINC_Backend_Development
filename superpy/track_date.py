@@ -1,12 +1,11 @@
-from pathlib import Path
-from datetime import datetime, date, timedelta
 import csv
 import sys
+from pathlib import Path
+from datetime import datetime, date, timedelta
 
 
-# ------------------------------------------------------------------------------------
-# Below functionality retrieves the date from today.csv
-# in other to keep track of TODAY
+########################################################################################
+# Below functionality sets or retrieves global argument TODAY
 
 
 if not Path("today.csv").is_file():  # create a 'today file' if it does not exist
@@ -21,8 +20,26 @@ else:  # open today.csv to retrieve the date that has been stored as 'today'
         TODAY = datetime.strptime(next(reader)[1], "%Y-%m-%d").date()
 
 
-# -------------------------------------------------------------------------------------
-# Below functions validate whether the CL arguments are in correct date format
+#######################################################################################
+# Date manipulation functions:
+
+
+def set_date(date_obj):
+
+    with open("today.csv", "w+") as file:
+        writer = csv.writer(file)
+        writer.writerow(["todays_date", date_obj])
+
+
+def advance_time(today, no_of_days):
+
+    today += timedelta(days=(int(no_of_days)))
+    set_date(today)
+    return today
+
+
+#######################################################################################
+# Functions that validate whether the CL arguments are in correct date format:
 
 
 def valid_date(date_str):
@@ -73,7 +90,3 @@ def valid_year(date_str):
             "Please enter a date in format 'YYYY'",
         )
         sys.exit()
-
-
-# utility functions: seperated from functions in main.py which
-# are called directly by the command line arguments

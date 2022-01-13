@@ -1,12 +1,13 @@
-import pytest
+# library imports
 import os
 import sys
-
-sys.path.append("../superpy")
-
-from example_products import *
-from ledger import Product, Ledger
+import pytest
 from datetime import date
+
+# application imports
+sys.path.append("../superpy")  # workaround to make tests work from within 'testing' subfolder
+from ledger import Product, Ledger
+from example_products import *
 
 
 @pytest.fixture(autouse=True)
@@ -145,7 +146,7 @@ def test_show_inventory_with_bought_and_sold_products():
     assert df_aslist[1] == [6, "apple", "2021-12-06", 2.0, "2042-01-01"]
     assert df_aslist[2] == [9, "banana", "2021-12-31", 3.2, "2042-01-01"]
 
-    assert len(df_aslist) == 3
+    assert len(df_aslist)
 
 
 def test_get_revenue_no_sold_products():

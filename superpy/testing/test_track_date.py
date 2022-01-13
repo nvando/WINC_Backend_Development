@@ -1,10 +1,36 @@
-import pytest
+# library imports
 import sys
-
-sys.path.append("../superpy")
-
-from track_date import *
+import pytest
 from datetime import date, timedelta
+
+# application imports
+sys.path.append("../superpy")  # workaround to make tests work from within testing subfolder
+from track_date import *
+
+
+############################################################################
+# tests for date manipulation functions
+
+
+def test_set_date():
+    set_date(date(2021, 12, 7))
+
+    with open("today.csv", "r") as file:
+        line = file.readline()
+
+    assert line == "todays_date,2021-12-07\n"
+
+
+def test_advance_time():
+
+    today = date(2021, 12, 7)
+    assert advance_time(today, 3) == date(2021, 12, 10)
+    assert advance_time(today, "2") == date(2021, 12, 9)
+    assert advance_time(today, -2) == date(2021, 12, 5)
+
+
+############################################################################
+# tests for date validation functions
 
 
 def test_valid_date():
