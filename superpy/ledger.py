@@ -76,14 +76,16 @@ class Ledger:
                 return product
 
     def show_inventory(self, inventory_date):
-        # add products to inventory if it had been bought before the inventory date,
+        # add products to inventory if:
+        # it had been bought before the inventory date,
+        # has not been sold or sold after the inventory date
         # has not yet been sold and has not expired
 
         inventory = []
         for product in self.products:
             if (
                 product.buy_date <= inventory_date
-                and product.sold_id is None
+                and (product.sold_id is None or product.sell_date > inventory_date)
                 and product.expiration >= inventory_date
             ):
                 inventory.append(
@@ -96,9 +98,13 @@ class Ledger:
                     ]
                 )
 
-        df = pd.DataFrame(inventory)
-        headers = ["id", "product", "buy_date", "buy_price", "expiration"]
-        df.columns = headers
+        if len(inventory) != 0:
+            df = pd.DataFrame(inventory)
+            headers = ["id", "product", "buy_date", "buy_price", "expiration"]
+            df.columns = headers
+        else:
+            print(f"Inventory empty on {inventory_date}")
+            sys.exit()
 
         return df, headers
 

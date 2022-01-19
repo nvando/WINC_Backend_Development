@@ -1,7 +1,7 @@
 import sys
 import csv
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime
 
 BOUGHT_PATH = Path("bought.csv")
 SOLD_PATH = Path("sold.csv")
@@ -61,7 +61,7 @@ def buy_product(product_name, buy_date, buy_price, expiration_date, quantity, b_
                     expiration_date,
                 ]
             )
-            print(f"Logged {product_name} in 'bought.csv' with product_id {id}")
+            print(f"Logged {product_name} in 'bought.csv' with product-id {id}")
             quantity -= 1
             id += 1
 
@@ -72,7 +72,6 @@ def sell_product(
 
     # create a file if it does not exists and add headers
     if not s_path.is_file():
-        print("creating file")
         create_csv(s_path, ["id", "bought_id", "sell_date", "sell_price"])
 
     # check if item is in store and assign bought_id to sold item
@@ -81,7 +80,8 @@ def sell_product(
         bought_reader = csv.reader(bought_file)
         sold_writer = csv.writer(sold_file)
 
-        while quantity >= 1:
+        number_of_products = quantity
+        while number_of_products >= 1:
             for row in sold_reader:
                 assigned_ids = [row[1] for row in sold_reader]  # list of items already sold
 
@@ -115,5 +115,5 @@ def sell_product(
 
             # append product with writerow() to sold.csv
             sold_writer.writerow([id, bought_id, sell_date, sell_price])
-            print(f"Added {product_name} to 'sold.csv' with id {id} and bought_id {bought_id}")
-            quantity -= 1
+            print(f"Added {product_name} to 'sold.csv' with sold-id {id} and bought-id {bought_id}")
+            number_of_products -= 1
