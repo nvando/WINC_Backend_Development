@@ -21,12 +21,12 @@ def test_set_date():
     assert line == "todays_date,2021-12-07\n"
 
 
-def test_advance_time():
+def test_change_date():
 
     today = date(2021, 12, 7)
-    assert advance_time(today, 3) == date(2021, 12, 10)
-    assert advance_time(today, "2") == date(2021, 12, 9)
-    assert advance_time(today, -2) == date(2021, 12, 5)
+    assert change_date(today, 3) == date(2021, 12, 10)
+    assert change_date(today, "2") == date(2021, 12, 9)
+    assert change_date(today, -2) == date(2021, 12, 5)
 
 
 ############################################################################

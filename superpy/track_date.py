@@ -31,7 +31,7 @@ def set_date(date_obj):
         writer.writerow(["todays_date", date_obj])
 
 
-def advance_time(today, no_of_days):
+def change_date(today, no_of_days):
 
     today += timedelta(days=(int(no_of_days)))
     set_date(today)
@@ -49,11 +49,11 @@ def valid_date(date_str):
 
     if date_str == "today":
         date_obj = TODAY
-        print("todays date = ", TODAY)
+        print("Today's date is set to ", TODAY)
         return date_obj
     elif date_str == "yesterday":
         date_obj = TODAY - timedelta(days=1)
-        print("yesterdays date is:", date_obj)
+        print("Yesterday's date is set to ", date_obj)
         return date_obj
     else:
         try:

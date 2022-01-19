@@ -7,7 +7,7 @@ import pandas as pd
 
 # application imports
 import parsers
-from track_date import TODAY, set_date, advance_time
+from track_date import TODAY, set_date, change_date
 from buysell import *
 from ledger import *
 from plotreports import *
@@ -27,7 +27,7 @@ args = parsers.create_super_parser()
 if args.command == "buy":
     buy_product(
         args.product,
-        args.buy_date,
+        args.buydate,
         args.price,
         args.expiration,
         args.quantity,
@@ -36,7 +36,7 @@ if args.command == "buy":
 if args.command == "sell":
     sell_product(
         args.product,
-        args.sell_date,
+        args.selldate,
         args.price,
         args.quantity,
     )
@@ -54,6 +54,12 @@ if args.command == "show-inventory":
             showindex=False,
         )
     )
+    if args.to_csv:
+
+        filename = f"Inventory on {args.date}.csv"
+        df.to_csv(REPORTS_PATH / filename, index=False)
+        print(f"Inventory saved as '{filename}' in Superpy/reports folder")
+
     if args.to_excel:
 
         filename = f"Inventory on {args.date}.xlsx"
@@ -77,7 +83,7 @@ if args.command == "show-product":
             f"Product sold for: ${product.sell_price}\n",
         )
     elif product.expiration < TODAY:
-        print("PRODUCT EXPIRED")
+        print("\nPRODUCT EXPIRED")
     else:
         print("\n Product not sold yet\n")
 
@@ -92,11 +98,15 @@ if args.command == "report-total":
 
     if args.type_of_report == "revenue":
         if args.day:
-            print(ledger.get_revenue_day(args.day))
+            revenue = ledger.get_revenue_day(args.day)
+            print(f"Total revenue on {args.day}: {revenue}")
         elif args.month:
-            print(ledger.get_revenue_month(args.month))
+            revenue = ledger.get_revenue_month(args.month)
+            month = args.month.strftime("%B")
+            print(f"Total revenue in {month} {args.month.year}: {revenue}")
         elif args.year:
-            print(ledger.get_revenue_year(args.year))
+            revenue = ledger.get_revenue_year(args.year)
+            print(f"Total revenue in {args.year.year}: {revenue}")
         else:
             print(
                 """Set reporting period with --day, --month or --year, 
@@ -105,11 +115,15 @@ if args.command == "report-total":
 
     if args.type_of_report == "profit":
         if args.day:
-            print(ledger.get_profit_day(args.day))
+            profit = ledger.get_profit_day(args.day)
+            print(f"Total profit on {args.day}: {profit}")
         elif args.month:
-            print(ledger.get_profit_month(args.month))
+            profit = ledger.get_profit_month(args.month)
+            month = args.month.strftime("%B")
+            print(f"Total profit in {month} {args.month.year}: {profit}")
         elif args.year:
-            print(ledger.get_profit_year(args.year))
+            profit = ledger.get_profit_year(args.year)
+            print(f"Total profit in {args.year.year}: {profit}")
         else:
             print(
                 """Set reporting period with --day, --month or --year, 
@@ -118,7 +132,7 @@ if args.command == "report-total":
 
 ######################################################################################################
 
-if args.command == "report-overtime":
+if args.command == "report-period":
     ledger = Ledger(BOUGHT_PATH, SOLD_PATH)
 
     if args.type_of_report == "revenue":
@@ -135,7 +149,7 @@ if args.command == "report-overtime":
     elif args.type_of_report == "product-sales":
         if args.product is not None:
             df = get_report(args.report_month, ledger.get_product_sales, args.product)
-            df.columns = ["Day", f"{args.product} sales"]
+            df.columns = ["Day", f"Number of {args.product}s sold"]
         else:
             print(
                 "Error: Missing required argument '--product'.\nplease enter '--product' followed by the product you want to report on"
@@ -163,6 +177,11 @@ if args.command == "report-overtime":
         fig.savefig(REPORTS_PATH / filename)
         print(f"Figure saved as '{filename}' in Superpy/reports folder")
 
+    if args.to_csv:
+        filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.csv"
+        df.to_csv(REPORTS_PATH / filename, index=False)
+        print(f"Data saved in '{filename}' in Superpy/reports folder")
+
     if args.to_excel:
         filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.xlsx"
         df.to_excel(REPORTS_PATH / filename, index=False)
@@ -173,15 +192,15 @@ if args.command == "report-overtime":
 ############################################################################################################################
 
 if args.command == "show-date":
-    print(f"The system has today's date stored as {TODAY}")
+    print(f"This program has today's date stored as {TODAY}")
 
-if args.command == "advance-time":
-    TODAY = advance_time(TODAY, args.no_of_days)
-    print(f"The program's date has been changed to {TODAY}")
+if args.command == "change-date":
+    TODAY = change_date(TODAY, args.no_of_days)
+    print(f"This program's date has been changed to {TODAY}")
 
 if args.command == "set-date":
     TODAY = set_date(args.date_to_set)
-    print(f"The program's date has been set to {args.date_to_set}")
+    print(f"This program's date has been set to {args.date_to_set}")
 
 
 # three technical features:
@@ -195,12 +214,13 @@ if args.command == "set-date":
 # so we can test the fucntions with a dummy FileDescriptor
 
 # creating subparsers:
-# adding subparsers so that for each command we can define which named arguments are required.
+# adding subparsers so that for each command so that
+# we can define which named-arguments are required and validate their type.
 # For instance with the 'buy' command,
-# one is promted to always enter product_name, buy_date, buy_price and expiration date.
-# each argument can also be tested seperately for being of the right type,
-# which makes it easy to test whether dates are entered correctly
-# and above all, makes sure the csv date files don't hold faulty dates or data fields
+# one is promted to always enter product_name, buy_price and expiration date.
+# Each of these arguments are tested seperately for being of the right type,
+# which makes it easy to test whether strings, integers and dates are entered correctly.
+# Above all, this makes sure the csv data files don't hold faulty dates or data fields
 
 # creating a class Product and a collection class Ledgers:
 # The class Ledger has a 'get_product' method which loads the info the csv files
