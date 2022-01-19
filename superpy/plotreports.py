@@ -3,6 +3,7 @@ from datetime import date
 import calendar
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter, MaxNLocator
 
 
 REPORTS_PATH = Path("reports")  # create folder for storing excel and pdf reports, if not exists
@@ -11,6 +12,7 @@ REPORTS_PATH.mkdir(parents=True, exist_ok=True)
 
 ##################################################################################################################
 # functions that report on profit, revenue or productsales over time (monthly)
+
 
 def get_report(report_month, report_method, product=None):
     # get_report takes as arguments:
@@ -44,15 +46,24 @@ def plot_df(df, overview_month):
     else:
         y_name = f"{df.columns[1]} and {df.columns[2]}".lower()
 
+    # determine title based on report-type
+    if df.columns[1] == "Revenue" or df.columns[1] == "Profit":
+        title = f"Showing daily {y_name} for {overview_month.strftime('%B')} {overview_month.year}"
+    else:
+        title = (
+            f"Showing {y_name} per day for {overview_month.strftime('%B')} {overview_month.year}"
+        )
+
     fig, ax = plt.subplots()
 
+    ax.yaxis.set_major_formatter(FormatStrFormatter("%0.0f"))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     df.plot(
         kind="line",
         ax=ax,
         alpha=0.450,
         x="Day",
-        ylabel="Euro",
-        title=f"Showing daily {y_name} for {overview_month.strftime('%B')} {overview_month.year}",
+        title=title,
     )
 
     return fig, ax
