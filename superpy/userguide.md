@@ -4,16 +4,20 @@
 
 SuperPy is a python Command Line Interface (CLI) program that enables users to keep track of a supermarket inventory and report on income data.
 
-With command line arguments a user can log products as bought or sold in the inventory, retrieve information on products based on product ID, report on profit, revenue or product sales over time and set, view and change the date that the program views as 'today'.
+With command line arguments a user can::
+- log products as bought or sold in an inventory, 
+- retrieve information on products based on product ID, 
+- report on profit, revenue or product sales over time, 
+- and set, view and change the date that the program views as 'today'
 
 SuperPy uses csv-files to keep track of product sales, and python classes to create ledgers and reports on profit and revenue over time. Report plots will show directly on the CLI but can be exported as tables to excel files, or as figures to PDF and JPEG images.
 
 The following modules need to be installed in order to run SuperPy:
 
 - Python (3.7.3)
-- matplotlib (3.5.1)
+- Matplotlib (3.5.1)
 - pandas (1.3.4)
-- tabulate (0.8.9)
+- Tabulate (0.8.9)
 
 
 
@@ -94,7 +98,9 @@ The following named-arguments are optional:
 
 When an user logs product for the first time a csv-file 'bought.csv' will be created in the SuperPy folder. Afterwards, anytime a user logs products as bought, these products will be added to this file. Products get assigned a 'biught_id' based on the order they are added to the csv-file.
 
-The default buy-date for logging a product as bought is the date stored as 'today'. This date can be set or changed by the user with the ```set-date``` or ```change-date``` sub-commands. If a user needs to enter a product bought in the past (before 'today'), the ```--buydate``` argument can be used to enter this specific date. Alternatively, the user can set or change the program's 'today' variable to that specific date. This will be especially useful when having to log a large number of products as bought on a certain date, as the user can then omit the `--buydate` argument which wil be set to it's default 'today'.  
+The default buy-date for logging a product as bought is the date stored as 'today'. This date can be set or changed by the user with the ```set-date``` or ```change-date``` sub-commands. There are two ways  a user can log products bought in the past (in case of back-log), thus before the 'today' date. 
+1. Use the optional ```--buydate``` argument to enter this specific date. For example, if today's date is 2022-01-01, someone can enter backlogged product data by entering  ```--buydate 2021-12-1``` after the buy command. 
+2. Set or change the program's 'today' variable to that past date. This will be especially useful when having to log a large number of products as bought on a certain date in the past, as the user then can omit the `--buydate` argument and which will be set to it's default 'today'.  
 
 
 ### Examples of BUY:  

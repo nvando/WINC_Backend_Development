@@ -7,7 +7,7 @@ import pandas as pd
 
 # application imports
 import parsers
-from track_date import TODAY, set_date, change_date
+from trackdate import TODAY, set_date, change_date
 from buysell import *
 from ledger import *
 from plotreports import *
@@ -149,7 +149,6 @@ if args.command == "report-period":
     elif args.type_of_report == "product-sales":
         if args.product is not None:
             df = get_report(args.report_month, ledger.get_product_sales, args.product)
-            df.columns = ["Day", f"Number of {args.product}s sold"]
         else:
             print(
                 "Error: Missing required argument '--product'.\nplease enter '--product' followed by the product you want to report on"
