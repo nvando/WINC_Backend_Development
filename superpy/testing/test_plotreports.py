@@ -7,7 +7,7 @@ import pandas as pd
 
 # application imports
 sys.path.append("../superpy")  # workaround to make tests work from within testing subfolder
-from example_products import *
+from init_test_files import *
 from plotreports import get_report
 from ledger import Ledger
 

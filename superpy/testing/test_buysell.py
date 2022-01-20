@@ -7,7 +7,7 @@ from datetime import date
 # application imports
 sys.path.append("../superpy")  # workaround to make tests work from within testing subfolder
 from buysell import create_csv, buy_product, sell_product
-from example_products import *
+from init_test_files import *
 
 
 @pytest.fixture(autouse=True)

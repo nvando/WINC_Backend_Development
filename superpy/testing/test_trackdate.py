@@ -5,7 +5,7 @@ from datetime import date, timedelta
 
 # application imports
 sys.path.append("../superpy")  # workaround to make tests work from within testing subfolder
-from track_date import *
+from trackdate import *
 
 
 ############################################################################
