@@ -202,33 +202,3 @@ if args.command == "set-date":
     print(f"This program's date has been set to {args.date_to_set}")
 
 
-# three technical features:
-# testable code
-# making code testable by leaving print statements outside functions
-#   (for instance, return df in show_inventory method
-#   and print he df outside function in at call-site,
-#   so that it is possible to verify dataframe with testing,
-#   otherwise printing would be a side effect of this function and hard to test)
-# and by not hardcoding the file paths into the function but giving them as parameters
-# so we can test the fucntions with a dummy FileDescriptor
-
-# creating subparsers:
-# adding subparsers so that for each command so that
-# we can define which named-arguments are required and validate their type.
-# For instance with the 'buy' command,
-# one is promted to always enter product_name, buy_price and expiration date.
-# Each of these arguments are tested seperately for being of the right type,
-# which makes it easy to test whether strings, integers and dates are entered correctly.
-# Above all, this makes sure the csv data files don't hold faulty dates or data fields
-
-# creating a class Product and a collection class Ledgers:
-# The class Ledger has a 'get_product' method which loads the info the csv files
-# and creates a product instance for each row.
-# These product instances are then loaded into an instance list using the collection class Ledger.
-# On this list one can invoke the class methods such as show revenue or profit.
-# why useful??
-
-
-# still to do:
-# load inventorys into csv or pdf's
-# another feature?
