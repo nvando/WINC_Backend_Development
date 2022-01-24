@@ -67,7 +67,8 @@ def valid_date(date_str):
 
 
 def valid_month(date_str):
-    """validates whether the input date has format 'YYYY-MM', returns date object"""
+    """validates whether the input date has format 'YYYY-MM',
+    returns date object"""
 
     try:
         return datetime.strptime(date_str, "%Y-%m").date()
@@ -80,7 +81,8 @@ def valid_month(date_str):
 
 
 def valid_year(date_str):
-    """validates whether the input date has format 'YYYY-MM', returns date object"""
+    """validates whether the input date has format 'YYYY-MM',
+    returns date object"""
 
     try:
         return datetime.strptime(date_str, "%Y").date()

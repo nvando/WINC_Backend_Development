@@ -30,7 +30,7 @@ Superpy contains the classes Product and Ledger. The class Ledger has a 'get_pro
 
 The collection class Ledger then loads all these Product instances into an instance list, or 'ledger'. Each time a user needs a report, such as profit or product-sales, class methods specific to the type of report requested can be invoked on an up-to-date ledger. 
 
-The advatage of structuring the code in this way, is that the class ledger provides a data structure which is better geared towards generating reports, than extracting the specific data directly from the two 'bought' and 'sold' csv-files everytime a report is queried . Report parameters, such as type and date, can be adjusted easily on a ledger withouth having to rewrite code. In addition, any new report-types that a user requires in the future (such as daily profit ov er a specific year) can easily be added as new 'get report' methods to the ledger class. 
+The advantage of structuring the code in this way, is that the class ledger provides a data structure which is better geared towards generating reports, than extracting the specific data directly from the two 'bought' and 'sold' csv-files everytime a report is queried . Report parameters, such as type and date, can be adjusted easily on a ledger withouth having to rewrite code. In addition, any new report-types that a user requires in the future (such as daily profit ov er a specific year) can easily be added as new 'get report' methods to the ledger class. 
 
 
 

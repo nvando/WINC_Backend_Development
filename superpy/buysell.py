@@ -1,13 +1,13 @@
 import sys
 import csv
 from pathlib import Path
-from datetime import date, datetime
+from datetime import datetime
 
 BOUGHT_PATH = Path("bought.csv")
 SOLD_PATH = Path("sold.csv")
 
 #######################################################################################
-# function for logging bought and sold products into csv files:
+# functions logging bought and sold products into csv-files:
 
 
 def create_csv(path, headings):
@@ -19,8 +19,12 @@ def create_csv(path, headings):
 
 
 def buy_product(product_name, buy_date, buy_price, expiration_date, quantity, b_path=BOUGHT_PATH):
-    # give csv to create/open as argument instead of hard-coded
-    # to make it easier to test functiom
+    """This function logs products into a csv-file 'bought.csv',
+    with each row representing one product and it's colums holding the product's buy-data.
+    If 'bought.csv' does not exist, it will first create one and add headers as the first row.
+    Otherwise, it will read 'bought.csv' to retrieve the id of the last entered product.
+    It then writes the entered product data onto a new row.
+    If quantity > 1, each product will be added onto a new row."""
 
     # create bought.csv if it doesn't exists and add header
     if not b_path.is_file():
@@ -46,7 +50,7 @@ def buy_product(product_name, buy_date, buy_price, expiration_date, quantity, b_
         try:
             # compare 'int' version of each id (key=lambda row: int(row[0]),
             # then choose the row with largest id (max),
-            # then obtain id (row[0]), convert to integer and ad 1
+            # then obtain id (row[0]), convert to integer and add 1
             id = int(max(reader, key=lambda row: int(row[0]))[0]) + 1  #
         except ValueError as error:  # if file does not have rows yet, set id to 1
             id = 1
@@ -69,6 +73,15 @@ def buy_product(product_name, buy_date, buy_price, expiration_date, quantity, b_
 def sell_product(
     product_name, sell_date, sell_price, quantity, b_path=BOUGHT_PATH, s_path=SOLD_PATH
 ):
+    """This function logs entered products into a csv-file 'sold.csv',
+    with each row representing one product and it's colums holding the product's sold-data.
+    If 'sold.csv' does not exist, it will create one and add headers as the first row.
+    It function will read 'sold.csv' to find all products already sold.
+    Then it will check 'bought.csv' for products with a similar name as the entered product,
+    which are not yet sold or expired. The first encountered product meeting these conditions
+    will be written as 'sold' into 'sold.csv' including it's bought-id, and assigned a new sold-id.
+    If no such product is found in 'bought.csv', it returns an error message and exits the program.
+    If quantity > 1, each product will be added onto a new row."""
 
     # create a file if it does not exists and add headers
     if not s_path.is_file():

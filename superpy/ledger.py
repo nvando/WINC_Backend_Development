@@ -5,6 +5,12 @@ import sys
 
 
 class Product:
+    """This class can be used to retrieve data from bought.csv
+    and to create one 'product' instance from each row (or bought product).
+    Data from sold.csv can be used to update the 'sold_id',
+    'sell_date' and 'sell_price' attributes, which otherwise are set to None.
+    """
+
     def __init__(
         self,
         bought_id,
@@ -24,9 +30,10 @@ class Product:
 
 
 class Ledger:
-    # creates list instances of all products bought and sold
-    # on which methods can be called that return revenue and profit
-    # on a certain date or over a period of time.
+    """Creates list instances of all products bought and sold.
+    On this list instance, methods can be called,
+    which return revenue, profit or number of products sold,
+    on a certain date or over a given period of time"""
 
     def __init__(self, b_path, s_path):
         self.products = []
@@ -76,12 +83,12 @@ class Ledger:
                 return product
 
     def show_inventory(self, inventory_date):
-        # add products to inventory if:
-        # it had been bought before the inventory date,
-        # has not been sold or sold after the inventory date
-        # has not yet been sold and has not expired
-
+        
         inventory = []
+        # Only add products to inventory if:
+        #   - it had been bought before the inventory date,
+        #   - has not been sold OR sold after the inventory date
+        #   - has not yet been sold and has not expired
         for product in self.products:
             if (
                 product.buy_date <= inventory_date

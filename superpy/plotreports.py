@@ -15,11 +15,11 @@ REPORTS_PATH.mkdir(parents=True, exist_ok=True)
 
 
 def get_report(report_month, report_method, product=None):
-    # get_report takes as arguments:
-    # a report_month as dateobject,
-    # a report function: get_profit_day/get_revenue_day/get_product_sales on a ledger instance
-    # a product name, only when report_method is set to 'get_product_sales'
-    # and returns a df
+    """get_report() takes as arguments:
+        - a report_month as dateobject,
+        - a report function (get_profit_day/get_revenue_day/get_product_sales) called on a ledger instance
+        - a product name, only when report_method is set to 'get_product_sales'
+    Returns a dataframe"""
 
     no_days_in_month = calendar.monthrange(report_month.year, report_month.month)[1]
 
@@ -39,6 +39,9 @@ def get_report(report_month, report_method, product=None):
 
 
 def plot_df(df, overview_month):
+    """Takes a dataframe as argument and returns
+    a tuple containing a figure and axes object,
+    which can be used to plot a graph from the dataframe."""
 
     # retrieve column names for use in plot title
     if len(df.columns) == 2:

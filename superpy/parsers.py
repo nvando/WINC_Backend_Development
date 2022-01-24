@@ -5,16 +5,17 @@ from trackdate import valid_date, valid_month, valid_year
 
 
 def create_super_parser():
-    """
-    This function creates the argument parser 'super_parser'.
+    """This function creates the argument parser 'super_parser'.
     The following commands are added as subparsers:
         buy /sell / show-product / show-inventory / report-total / report-period /
         show-date / set-date / change-date
-    Each sub-command int turn has it's own arguments,
+    Each sub-command in turn has it's own arguments,
     which are either required or have a default values set.
     The arguments for each subcommand can be checked for type.
-    The date arguments are validated through the valid_date function,imported from the track_date module
-    The arguments are then parsed with parse_args and returned as object attributes"""
+    The date arguments are validated through the valid_date function,
+    imported from the trackdate module
+    The arguments are then parsed with parse_args
+    and returned as object attributes"""
 
     super_parser = argparse.ArgumentParser(
         description="""Keep track of the supermarket inventory.
@@ -23,12 +24,11 @@ def create_super_parser():
         or report on profit and revenue 
         on certain days or over time period"""
     )
+    # Creating the subparser.
+    # This allows for establishing a completely different sets of permitted arguments,
+    # depending on the command being run.
+    # dest='command' is used to differentiate between which argument is actually used
     subparsers = super_parser.add_subparsers(dest="command", help="Sub-commands")
-    # Create subparsers for each main command,
-    # as most of the commands necesarry for this program
-    # (such as the 'buy', or 'report' command)
-    # each require a unique set of arguments and
-    # the subparsers allow's the program to distinguish between them
 
     # subparser for buy command
     buy_parser = subparsers.add_parser(
@@ -42,10 +42,10 @@ def create_super_parser():
         Product quantity (--quantity) is also optional and set to 1 if ommited""",
     )
 
-    # using named-arguments instead of positional arguments
-    # as their order would be hard to remember if arguments were postional
-    # With using named-arguments order does not matter,
-    # and if arguments are required, the 'required' option is set to True
+    # using named-arguments for the buy and sell sub-commands
+    # because if arguments were positional,
+    # their order would be hard to remember
+    # If arguments are required, the 'required' option is set to True
 
     buy_parser.add_argument(
         "--product",
