@@ -149,6 +149,7 @@ if args.command == "report-period":
     elif args.type_of_report == "product-sales":
         if args.product is not None:
             df = get_report(args.report_month, ledger.get_product_sales, args.product)
+            df.columns = ["Day", f"Number of {args.product}s sold"]
         else:
             print(
                 "Error: Missing required argument '--product'.\nplease enter '--product' followed by the product you want to report on"
@@ -166,23 +167,28 @@ if args.command == "report-period":
 
     fig, ax = plot_df(df, args.report_month)
 
+    if args.product is None:
+        filename_no_extension = f"{args.type_of_report.capitalize()} for {args.report_month.strftime('%B')} {args.report_month.year}"
+    else:
+        filename_no_extension = f"{args.product.capitalize()} sales for {args.report_month.strftime('%B')} {args.report_month.year}"
+
     if args.to_pdf:
-        filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.pdf"
+        filename = filename_no_extension + ".pdf"
         fig.savefig(REPORTS_PATH / filename)
         print(f"Figure saved as '{filename}' in Superpy/reports folder")
 
     if args.to_jpeg:
-        filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.jpg"
+        filename = filename_no_extension + ".jpeg"
         fig.savefig(REPORTS_PATH / filename)
         print(f"Figure saved as '{filename}' in Superpy/reports folder")
 
     if args.to_csv:
-        filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.csv"
+        filename = filename_no_extension + ".csv"
         df.to_csv(REPORTS_PATH / filename, index=False)
         print(f"Data saved in '{filename}' in Superpy/reports folder")
 
     if args.to_excel:
-        filename = f"{args.type_of_report} for {args.report_month.strftime('%B')} {args.report_month.year}.xlsx"
+        filename = filename_no_extension + ".xlsx"
         df.to_excel(REPORTS_PATH / filename, index=False)
         print(f"Table saved as '{filename}' in Superpy/reports folder")
 
@@ -200,5 +206,3 @@ if args.command == "change-date":
 if args.command == "set-date":
     TODAY = set_date(args.date_to_set)
     print(f"This program's date has been set to {args.date_to_set}")
-
-

@@ -4,13 +4,13 @@
 
 SuperPy is a python Command Line Interface (CLI) program that enables users to keep track of a supermarket inventory and report on income data.
 
-With command line arguments a user can::
-- log products as bought or sold in an inventory, 
+With command line arguments a user can:
+- log products as bought or sold into an inventory, 
 - retrieve information on products based on product ID, 
 - report on profit, revenue or product sales over time, 
-- and set, view and change the date that the program views as 'today'
+- set, view and change the date that the program views as 'today'
 
-SuperPy uses csv-files to keep track of product sales, and python classes to create ledgers and reports on profit and revenue over time. Report plots will show directly on the CLI but can be exported as tables to excel files, or as figures to PDF and JPEG images.
+SuperPy uses csv-files to keep track of product sales, and python classes to create ledgers and reports on profit and revenue over time. Report plots will show directly on the CLI but can be exported as tables to excel files, or as figures to PDF and JPEG files.
 
 The following modules need to be installed in order to run SuperPy:
 
@@ -18,8 +18,9 @@ The following modules need to be installed in order to run SuperPy:
 - Matplotlib (3.5.1)
 - pandas (1.3.4)
 - Tabulate (0.8.9)
+*- Pytest (6.2.5) ~ only needed for testing*
 
-
+If starting a new inventory, simply begin with logging products using the 'buy' subcommand. Alternatively, to pratise with the program and get a feel for the different features, example data can be used. Bought.csv and sold.csv contains product data on products 'bought' from January 2021 to January 2022 and sold from October 2021 to January 2022. To use this data, simply move the bought.csv sand sold.csv files from the example folder to it's parent SuperPy folder. 
 
 
 ## SuperPy commands
@@ -48,11 +49,11 @@ Each sub-command is explained below, and examples are provided.
 
 SuperPy keeps track of date.  The date that this program views as 'today', is stored internally in a csv-file as the variable 'today'.  This date can be viewed, set and moved forward or backwards by the user with the following commands: 
 
-```$ show-date```  
+```show-date```  
 *Shows the date that SuperPy has stored as 'today'.*  
-```$ set-date <date>```  
+```set-date <date>```  
 *Sets date to input date, enter in format YYYY-MM-DD.*  
-```$ change-date <number of days>```  
+```change-date <number of days>```  
 *Advances the date a specific number of days, entered as an integer. Date can also be moved backward by entering a negative integer.*  
 
 Only the very first time the SuperPy program is used by a user, the today variable is set automatically to the current date. After this,  the today variable has to be changed by the user with ```set-date``` or ```change-date``` before logging products as bought/sold or when otherwise using the 'today' value on the command-line.
@@ -249,7 +250,7 @@ The show-inventory command reports on the inventory on a specific day. It is fol
 
 Required positional argument:  
 ```inventory-date```  
-*The inventory date given as 'today', 'yesterday' or as date in format YYYY-MM-DD. Default is 'today'*
+*The inventory date given as 'today', 'yesterday' or as date in format YYYY-MM-DD*
 
 Flags (optional arguments):  
 ```--to-csv```  
@@ -337,15 +338,15 @@ Total profit in January 2022: 1.2
 ## The REPORT-PERIOD command: 
 ## reporting revenue, profit or sales over time.
 
-With the report-period command a user can plot daily revenue, profit or product-sales over a given month. This subcommand is followed with the two positional arguments 'month' and 'report-type'. The 'report-type' can be set to 'revenue', 'profit', 'revenue-profit' (to show both in the same plot), or product-sales. The latter returns the number of sold items per day over a given month, for a specific product . When 'report-type' is set to 'product-sales', it should be followed with the named-argument '--product' and the product name for which the user wants to see sales. The data of all report-types can be saved as a csv-file or an excel-spreadsheet, and the plots can be exported to JPEG or PDF with the following flags '--to-csv', '--to-excel', '--to-jpeg' and '--to-pdf'.
+With the report-period command a user can plot daily revenue, profit or product-sales over a given month. This subcommand is followed with the two positional arguments 'report-type' and 'month'. The 'report-type' can be set to 'revenue', 'profit', 'revenue-profit' (to show both in the same plot), or product-sales. The latter returns the number of sold items per day over a given month, for a specific product . When 'report-type' is set to 'product-sales', the user should follow the 'report-month' argument with the named-argument '--product' and the product name for which the user wants to see sales. The data of all report-types can be saved as a csv-file or an excel-spreadsheet, and the plots can be exported to JPEG or PDF with the following flags '--to-csv', '--to-excel', '--to-jpeg' and '--to-pdf'.
 
 
 Required positional arguments:  
-```report-month```  
-*The month for which daily revenue, profit or product-sales data will be calculated. 
-Enter in format YYYY-MM*  
+  
 ```report-type```  
-*The type of report, choices are 'revenue', 'profit', 'revenue-profit' (showing both), or 'product-sales'*
+*The type of report, choices are 'revenue', 'profit', 'revenue-profit' (showing both), or 'product-sales'*  
+```report-month```  
+*The month for which daily revenue, profit or product-sales data will be calculated. Enter in format YYYY-MM.*
 
 
 Named-arguments:  
@@ -369,7 +370,7 @@ Flags:
 Reporting revenue for January 2022 and saving data in an Excel-spreadsheet.
 
 ```
-$ python main.py report-period 2022-01 profit --to-excel
+$ python main.py report-period profit 2022-01 --to-excel
 +-------+----------+
 |   Day |   Profit |
 |-------+----------|
@@ -412,9 +413,10 @@ The plot will be shown as a Matplotlib figure, which needs to be closed before a
 
 ![Example of profit plot](./userguide_images/example_profit_plot.jpg)
 
+
 Plotting the daily sales of apples over Januray 2022 and saving the figure as PDF:
 ```
-$ python main.py report-period 2022-01 product-sales --product apple --to-pdf
+$ python main.py report-period product-sales  2022-01 --product apple --to-pdf
 +-------+-------------------------+
 |   Day |   Number of apples sold |
 |-------+-------------------------|

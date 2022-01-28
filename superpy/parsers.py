@@ -140,14 +140,14 @@ def create_super_parser():
     inventory_parser = subparsers.add_parser(
         "show-inventory",
         help="""Shows inventory on a given date. 
-        Enter inventory date as today, yesterday or as format YYYY-MM-DD, default = 'today'.
+        Enter inventory date as today, yesterday or as format YYYY-MM-DD'.
         The inventory can be exported to a csv or excel file, 
         by using the flags --to-csv or --to-excel respectively""",
     )
     inventory_parser.add_argument(
         "date",
         type=valid_date,
-        help="Enter inventory date as today, yesterday or as format YYYY-MM-DD, default = 'today",
+        help="Enter inventory date as today, yesterday or as format YYYY-MM-DD",
     )
 
     inventory_parser.add_argument(
@@ -198,18 +198,13 @@ def create_super_parser():
     report_period = subparsers.add_parser(
         "report-period",
         help="""Plot daily revenue, profit or product-sales over a given month.
-        Follow with month in format "YYYY-MM" and then by report-type:
-        choose from 'revenue', 'profit', "revenue-profit' (both), 
-        or 'product-sales. When report-type is product-sales, 
-        use the named-argument --product to enter the product name.
-        For all report types, 
+        Follow with report-type: choose from 'revenue', 'profit', 'revenue-profit' (both), 
+        or 'product-sales. Then enter month in format "YYYY-MM".
+        If report-type is product-sales, use the named-argument --product 
+        to enter the product name. For all report types, 
         you can choose to save the output data to csv or excel file,
         or to the plot to a  jpeg or pdf file with the following flags:
         --to-csv --to-excel, --to-jpeg and --to-pdf""",
-    )
-
-    report_period.add_argument(
-        "report_month", type=valid_month, help="Enter report-month in format YYYY-MM"
     )
 
     report_period.add_argument(
@@ -217,6 +212,10 @@ def create_super_parser():
         choices=["revenue", "profit", "revenue-profit", "product-sales"],
         help="""Choose which type of report to show. Choose from:
         'revenue', 'profit', 'revenue-profit', 'product-sales'""",
+    )
+
+    report_period.add_argument(
+        "report_month", type=valid_month, help="Enter report-month in format YYYY-MM"
     )
 
     report_period.add_argument(

@@ -83,7 +83,7 @@ class Ledger:
                 return product
 
     def show_inventory(self, inventory_date):
-        
+
         inventory = []
         # Only add products to inventory if:
         #   - it had been bought before the inventory date,
@@ -123,7 +123,7 @@ class Ledger:
             if not product.sell_date is None and product.sell_date == report_date
         ]
 
-        return sum(sell_prices)
+        return round(sum(sell_prices), 2)
 
     def get_revenue_month(self, report_date):
 
@@ -135,7 +135,7 @@ class Ledger:
             and product.sell_date.year == report_date.year
         ]
 
-        return sum(sell_prices)
+        return round(sum(sell_prices), 2)
 
     def get_revenue_year(self, report_date):
 
@@ -145,7 +145,7 @@ class Ledger:
             if not product.sell_date is None and product.sell_date.year == report_date.year
         ]
 
-        return sum(sell_prices)
+        return round(sum(sell_prices), 2)
 
     def get_profit_day(self, report_date):
 

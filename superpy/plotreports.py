@@ -51,11 +51,9 @@ def plot_df(df, overview_month):
 
     # determine title based on report-type
     if df.columns[1] == "Revenue" or df.columns[1] == "Profit":
-        title = f"Showing daily {y_name} for {overview_month.strftime('%B')} {overview_month.year}"
+        title = f"Daily {y_name} for {overview_month.strftime('%B')} {overview_month.year}"
     else:
-        title = (
-            f"Showing {y_name} per day for {overview_month.strftime('%B')} {overview_month.year}"
-        )
+        title = f"{y_name.capitalize()} per day for {overview_month.strftime('%B')} {overview_month.year}"
 
     fig, ax = plt.subplots()
 
