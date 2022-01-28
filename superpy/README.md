@@ -135,7 +135,7 @@ Logged mango in 'bought.csv' with product_id 5
 
 The above commands store the example data to bought.csv as follows:
 
-![Example of bought.csv](./userguide_images/example_boughtcsv.jpg)
+![Example of bought.csv](./userguide_images/example_boughtcsv.png)
 
 &nbsp;
 
@@ -196,7 +196,7 @@ Error: remaining product(s) not in stock
 
 The above commands store the example data to sold.csv as follows:
 
-![Example of sold.csv](./userguide_images/example_soldcsv.jpg)
+![Example of sold.csv](./userguide_images/example_soldcsv.png)
 
 
 &nbsp;
@@ -411,7 +411,7 @@ Table saved as 'profit for January 2022.xlsx' in Superpy/reports folder
 
 The plot will be shown as a Matplotlib figure, which needs to be closed before a user can use the CLI again. 
 
-![Example of profit plot](./userguide_images/example_profit_plot.jpg)
+![Example of profit plot](./userguide_images/example_profit_plot.png)
 
 
 Plotting the daily sales of apples over Januray 2022 and saving the figure as PDF:
@@ -456,7 +456,7 @@ Figure saved as 'product-sales for January 2022.pdf' in Superpy/reports folder
 ```
 The plot will look as follows:
 
-![Example of product sales plot](./userguide_images/example_product_sales_plot.jpg)
+![Example of product sales plot](./userguide_images/example_product_sales_plot.png)
 
 
 
