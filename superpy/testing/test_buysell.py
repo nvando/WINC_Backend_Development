@@ -5,7 +5,9 @@ import pytest
 from datetime import date
 
 # application imports
-sys.path.append("../superpy")  # workaround to make tests work from within testing subfolder
+# workaround to make tests work from within testing subfolder:
+# add extra location to the places where python will look for modules (python path env variable)
+sys.path.append("../superpy")
 from buysell import create_csv, buy_product, sell_product
 from init_test_files import *
 
