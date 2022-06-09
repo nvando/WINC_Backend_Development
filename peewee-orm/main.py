@@ -37,7 +37,7 @@ def vegetarian_dishes():
                 only_vega_ingredients = False
 
         if only_vega_ingredients is True:
-            vega_dishes.append(dish.name)
+            vega_dishes.append(dish)
 
     return vega_dishes
 
