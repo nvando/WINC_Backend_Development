@@ -14,18 +14,15 @@ def cheapest_dish():
     return models.Dish.select(models.Dish.name).where(fn.MIN(models.Dish.price_in_cents))
 
 
-def vegetarian_dishes():
+def vegetarian_dishes() -> List[models.Dish]:
     """You'd like to know what vegetarian dishes are available
+
     Query the database to return a list of dishes that contain only
     vegetarian ingredients.
     """
-    # # query = models.Dish.select(models.Dish.name).where(models.Ingredient.is_vegetarian == True)
 
     # vega_ingredients = models.Ingredient.select(models.Ingredient.name).where(
     #     models.Ingredient.is_vegetarian is True
-    # )
-    # for ingredient in vega_ingredients:
-    #     print(ingredient)
 
     # vega_dishes = models.Dish.select(models.Dish.name).where(
     #     models.Dish.ingredients.is_vegetarian is True
