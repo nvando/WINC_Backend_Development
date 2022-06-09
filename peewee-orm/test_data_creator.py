@@ -48,8 +48,7 @@ def populate_test_data():
         for ingredient in ingredients:
 
             ing = Ingredient.get(Ingredient.name == ingredient)
-            dish.ingredients = ing
-            dish.save
+            dish.ingredients.add(ing)
             print(dish.name, ing.is_vegan)
 
     # favorite_data = (
