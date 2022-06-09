@@ -11,29 +11,24 @@ def cheapest_dish():
     Query the database to retrieve the cheapest dish available
     """
 
-    return models.Dish.select(models.Dish.name).where(fn.MIN(models.Dish.price_in_cents))
+    query = models.Dish.select().order_by(models.Dish.price_in_cents.asc())
+    cheapest_dish = query[0]
+    return cheapest_dish
 
 
-# def vegetarian_dishes() -> List[models.Dish]:
-def vegetarian_dishes():
+def vegetarian_dishes() -> List[models.Dish]:
+
     """You'd like to know what vegetarian dishes are available
 
     Query the database to return a list of dishes that contain only
     vegetarian ingredients.
     """
 
-    # vega_ingredients = models.Ingredient.select(models.Ingredient.name).where(
-    #     models.Ingredient.is_vegetarian is True
-
-    # vega_dishes = models.Dish.select(models.Dish.name).where(
-    #     models.Dish.ingredients.is_vegetarian is True
-
     vega_dishes = []
     for dish in models.Dish.select():
         only_vega_ingredients = True
         for ingredient in dish.ingredients:
-            if ingredient.is_vegetarian is not True:
-                print(dish.name, ingredient.name, "not vega")
+            if ingredient.is_vegetarian is False:
                 only_vega_ingredients = False
 
         if only_vega_ingredients is True:
@@ -48,7 +43,20 @@ def best_average_rating() -> models.Restaurant:
     Query the database to retrieve the restaurant that has the highest
     rating on average
     """
-    ...
+    # selecteer van Rating alle ratings,
+    # group by add_rating_to_restaurant
+    # calculate average per restaurant
+    # return restaurant name from Restaurant, with highest rating
+
+
+# Let's start with our base query. We want to get all usernames and the number of
+# tweets they've made. We wish to sort this list from users with most tweets to
+# # users with fewest tweets.
+# query = (
+#     User.select(User.username, fn.COUNT(Tweet.id).alias("num_tweets"))
+#     .join(Tweet, JOIN.LEFT_OUTER)
+#     .group_by(User.username)
+# )
 
 
 def add_rating_to_restaurant() -> None:
