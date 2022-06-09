@@ -43,20 +43,21 @@ def best_average_rating() -> models.Restaurant:
     Query the database to retrieve the restaurant that has the highest
     rating on average
     """
-    # selecteer van Rating alle ratings,
-    # group by add_rating_to_restaurant
-    # calculate average per restaurant
-    # return restaurant name from Restaurant, with highest rating
 
+    query = (
+        models.Restaurant.select(
+            models.Restaurant.name, fn.AVG(models.Rating.rating).alias("avg_rating")
+        )
+        .join(models.Rating, JOIN.INNER)
+        .group_by(models.Restaurant.name)
+        .order_by(fn.AVG(models.Rating.rating).desc())
+    )
+    for restaurant in query:
+        print(restaurant.name, restaurant.avg_rating)
 
-# Let's start with our base query. We want to get all usernames and the number of
-# tweets they've made. We wish to sort this list from users with most tweets to
-# # users with fewest tweets.
-# query = (
-#     User.select(User.username, fn.COUNT(Tweet.id).alias("num_tweets"))
-#     .join(Tweet, JOIN.LEFT_OUTER)
-#     .group_by(User.username)
-# )
+    best_rest = query[0]
+    print(best_rest, best_rest.name, best_rest.avg_rating)
+    return best_rest
 
 
 def add_rating_to_restaurant() -> None:

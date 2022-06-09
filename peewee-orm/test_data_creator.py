@@ -1,5 +1,11 @@
 from models import *
 import peewee
+import os
+
+import os
+
+if os.path.exists("test_data.db"):
+    os.remove("test_data.db")
 
 db = peewee.SqliteDatabase("test_data.db")
 
@@ -23,7 +29,6 @@ ingredients_data = (
     ("risotto", (True, True, True)),
 )
 
-
 dish_ingredients = (
     ("pasta carbonara", ("pasta", "pork", "cheese")),
     ("pasta napolitana", ("pasta", "tomato", "pinenut")),
@@ -32,9 +37,75 @@ dish_ingredients = (
     ("risotto vegatariana", ("risotto", "tomato", "potato", "pinenut")),
 )
 
+restaurant_data = (
+    ("Pinokio", 1980, "18:00", "20:00"),
+    ("Florencia", 2015, "17:00", "00:00"),
+    ("Casa di Pasta", 2010, "12:00", "23:00"),
+)
+
+rating_data = (
+    (
+        1,
+        7,
+    ),
+    (
+        1,
+        6,
+    ),
+    (
+        1,
+        4,
+    ),
+    (
+        2,
+        7,
+    ),
+    (
+        2,
+        8,
+    ),
+    (
+        2,
+        7,
+    ),
+    (
+        2,
+        8,
+    ),
+    (
+        2,
+        9,
+    ),
+    (
+        3,
+        6,
+    ),
+    (
+        3,
+        7,
+    ),
+    (
+        3,
+        7,
+    ),
+    (
+        3,
+        7,
+    ),
+    (
+        3,
+        6,
+    ),
+    (
+        3,
+        6,
+    ),
+)
+
 
 def populate_test_data():
-    db.create_tables([Ingredient, Restaurant, Dish, Rating, DishIngredient])
+
+    db.create_tables([Ingredient, Restaurant, Dish, Rating, DishIngredient], safe=False)
 
     for name, diet in ingredients_data:
         Ingredient.create(name=name, is_vegan=diet[0], is_vegetarian=diet[1], is_glutenfree=diet[2])
@@ -51,12 +122,16 @@ def populate_test_data():
             dish.ingredients.add(ing)
             print(dish.name, ing.is_vegan)
 
-    # favorite_data = (
-    #     ('huey', ['whine']),
-    #     ('mickey', ['purr']),
-    #     ('zaizee', ['meow', 'purr']))
-    # for username, favorites in favorite_data:
-    #     user = User.get(User.username == username)
-    #     for content in favorites:
-    #         tweet = Tweet.get(Tweet.content == content)
-    #         Favorite.create(user=user, tweet=tweet)
+    for restaurant in restaurant_data:
+        Restaurant.create(
+            name=restaurant[0],
+            open_since=restaurant[1],
+            opening_time=restaurant[2],
+            closing_time=restaurant[3],
+        )
+
+    for rating in rating_data:
+        Rating.create(
+            restaurant=rating[0],
+            rating=rating[1],
+        )
