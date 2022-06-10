@@ -54,7 +54,6 @@ def best_average_rating() -> models.Restaurant:
     )
 
     for restaurant in query:
-        print(restaurant)
         print(restaurant.name, restaurant.avg_rating)
 
     best_rest = models.Restaurant.get(models.Restaurant.name == query[0].name)
@@ -67,7 +66,20 @@ def add_rating_to_restaurant() -> None:
 
     Select the first restaurant in the dataset and add a rating
     """
-    ...
+
+    first_rest = models.Restaurant.get()
+    models.Rating.create(rating=8, restaurant=first_rest, comment="new comment")
+    query = (
+        models.Restaurant.select(
+            models.Restaurant.name, models.Rating.rating, models.Rating.comment
+        )
+        .join(models.Rating)
+        .where(models.Restaurant.name == first_rest.name)
+    )
+
+    # printing all the ratings of this restaurant to see if comment has been added
+    for row in query:
+        print(row.name, "- rating: ", row.rating.rating, row.rating.comment)
 
 
 def dinner_date_possible() -> List[models.Restaurant]:
