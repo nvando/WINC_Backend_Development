@@ -11,7 +11,7 @@ def cheapest_dish():
     Query the database to retrieve the cheapest dish available
     """
 
-    query = models.Dish.select().order_by(models.Dish.price_in_cents.asc())
+    query = models.Dish.select().order_by(models.Dish.price_in_cents.asc()).limit(1)
     cheapest_dish = query[0]
     return cheapest_dish
 
@@ -50,13 +50,15 @@ def best_average_rating() -> models.Restaurant:
         )
         .join(models.Rating, JOIN.INNER)
         .group_by(models.Restaurant.name)
-        .order_by(fn.AVG(models.Rating.rating).desc())
+        .order_by(SQL("avg_rating").desc())
     )
+
     for restaurant in query:
+        print(restaurant)
         print(restaurant.name, restaurant.avg_rating)
 
-    best_rest = query[0]
-    print(best_rest, best_rest.name, best_rest.avg_rating)
+    best_rest = models.Restaurant.get(models.Restaurant.name == query[0].name)
+    print(best_rest)
     return best_rest
 
 
