@@ -10,11 +10,11 @@ if os.path.exists("test_data.db"):
 db = peewee.SqliteDatabase("test_data.db")
 
 dishes_data = (
-    ("pasta carbonara", "Pinokio", 1500),
-    ("pasta napolitana", "Casa di Pasta", 1300),
-    ("pasta pollo", "Florencia", 1400),
-    ("pizza margarita", "Pinokio", 1100),
-    ("risotto vegatariana", "Florencia", 1000),
+    ("pasta carbonara", 1, 1500),
+    ("pasta napolitana", 3, 1300),
+    ("pasta pollo", 2, 1400),
+    ("pizza margarita", 1, 1100),
+    ("risotto vegatariana", 2, 1000),
 )
 
 ingredients_data = (
@@ -39,8 +39,8 @@ dish_ingredients = (
 
 restaurant_data = (
     ("Pinokio", 1980, "18:00", "20:00"),
-    ("Florencia", 2015, "17:00", "00:00"),
-    ("Casa di Pasta", 2010, "12:00", "23:00"),
+    ("Florencia", 2015, "17:00", "23:00"),
+    ("Casa di Pasta", 2010, "12:00", "18:00"),
 )
 
 rating_data = (
@@ -120,7 +120,6 @@ def populate_test_data():
 
             ing = Ingredient.get(Ingredient.name == ingredient)
             dish.ingredients.add(ing)
-            print(dish.name, ing.is_vegan)
 
     for restaurant in restaurant_data:
         Restaurant.create(
