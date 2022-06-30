@@ -1,9 +1,8 @@
-# A user has a name, address data, and billing information.
-
-from enum import unique
 from peewee import *
+import re
 
-database = SqliteDatabase(":memory:")
+database = SqliteDatabase("test_data.db")
+postcode_pattern = r"^[1-9][0-9]{3}\s?[A-Za-z]{2}$"
 
 
 class BaseModel(Model):
@@ -15,47 +14,42 @@ class Tag(BaseModel):
     name = TextField(unique=True)  # tags should not be duplicated
 
 
-class Product(BaseModel):
-    name: CharField()
-    description: CharField()
-    tags = ManyToManyField(Tag)
-    price_in_cents: IntegerField()
-    in_stock: IntegerField()
-
-
 class Postal(BaseModel):
-    street_address: CharField()
-    postcode: CharField()
-    city: TextField()
+    street = CharField()
+    postcode = CharField()
+    city = TextField()
+    same_as_billing = BooleanField(default=True)
 
 
 class Billing(BaseModel):
-    street_address: CharField()
-    postcode: CharField()
-    city: TextField()
+    street = CharField(null=True)
+    postcode = CharField(null=True)
+    city = TextField(null=True)
 
 
 class User(BaseModel):
+    username = CharField()
+    fullname = TextField()
+    postal = ForeignKeyField(Postal)
+    billing = ForeignKeyField(Billing, null=True)
+
+
+class Product(BaseModel):
     name = CharField()
-    billing_address = ForeignKeyField(Postal)
-    postal_address = ForeignKeyField(Billing)
-    products = ManyToManyField(Product)
+    description = CharField()
+    tags = ManyToManyField(Tag)  # facilitates search and categorization
+    price_in_cents = IntegerField(
+        constraints=[Check("price_in_cents > 0")]
+    )  # pricing in cents prevents rounding errors
+    sold_by_user = ForeignKeyField(User)
+    quantity = IntegerField()
 
 
 class Transaction(BaseModel):
-    user: ForeignKeyField(User)
-    product: ForeignKeyField(Product)
-    quantity: IntegerField()
+    # link a buyer with a purchased product and a quantity of purchased items
+    user = ForeignKeyField(User)  # only users can purchase products
+    product = ForeignKeyField(Product)
+    quantity = IntegerField()
 
 
-ProductTags = Product.tag.get_through_model()
-UserProducts = User.products.get_through_model()
-
-
-# Each user must be able to own a number of products.
-# The products must have a name, a description, a price per unit, and a quantity describing the amount in stock.
-# The price should be stored in a safe way; rounding errors should be impossible.
-# In order to facilitate search and categorization, a product must have a number of descriptive tags.
-# We want to be able to track the purchases made on the marketplace, therefore a transaction model must exist
-# You can assume that only users can purchase goods
-# The transaction model must link a buyer with a purchased product and a quantity of purchased items
+ProductTags = Product.tags.get_through_model()
