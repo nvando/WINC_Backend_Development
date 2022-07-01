@@ -37,7 +37,7 @@ class User(BaseModel):
 class Product(BaseModel):
     name = CharField()
     description = CharField()
-    tags = ManyToManyField(Tag)  # facilitates search and categorization
+    tags = ManyToManyField(Tag, backref="products")  # facilitates search and categorization
     price_in_cents = IntegerField(
         constraints=[Check("price_in_cents > 0")]
     )  # pricing in cents prevents rounding errors

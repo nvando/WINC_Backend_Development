@@ -75,7 +75,18 @@ def list_user_products(user_id):
 
 
 def list_products_per_tag(tag_id):
-    ...
+
+    try:
+        tag = Tag.get(Tag.id == tag_id)
+        print("tag: ", tag.name)
+    except DoesNotExist:
+        print("Not a valid tag_id")
+
+    print("Product(s):")
+    for product in tag.products:
+        print(product.name)
+
+    return [product for product in tag.products]
 
 
 def add_product_to_catalog(user_id, product):
@@ -99,6 +110,8 @@ if __name__ == "__main__":
     print("test data created")
     # term = input("Enter search term: ")
     # search(term)
-    user_id = input("Enter user_id: ")
+    # user_id = input("Enter user_id: ")
     # list_user_addresses(user_id)
-    list_user_products(user_id)
+    # list_user_products(user_id)
+    tag_id = input("Enter tag_id: ")
+    list_products_per_tag(tag_id)
