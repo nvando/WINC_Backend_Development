@@ -16,7 +16,7 @@ class Tag(BaseModel):
 
 class Postal(BaseModel):
     street = CharField()
-    postcode = CharField()
+    postcode = CharField(constraints=[Check("length(postcode)<=7 AND length(postcode)>=6")])
     city = TextField()
     same_as_billing = BooleanField(default=True)
 
@@ -35,13 +35,13 @@ class User(BaseModel):
 
 
 class Product(BaseModel):
-    name = CharField()
-    description = CharField()
+    name = CharField(index=True)
+    description = CharField(index=True)
     tags = ManyToManyField(Tag, backref="products")  # facilitates search and categorization
     price_in_cents = IntegerField(
         constraints=[Check("price_in_cents > 0")]
     )  # pricing in cents prevents rounding errors
-    sold_by_user = ForeignKeyField(User)
+    sold_by_user = ForeignKeyField(User, index=True)
     quantity = IntegerField()
 
 
