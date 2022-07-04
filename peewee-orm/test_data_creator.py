@@ -2,8 +2,6 @@ from models import *
 import peewee
 import os
 
-import os
-
 if os.path.exists("test_data.db"):
     os.remove("test_data.db")
 
