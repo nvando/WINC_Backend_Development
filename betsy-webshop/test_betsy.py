@@ -3,9 +3,6 @@ from peewee import *
 import pytest
 
 
-# @pytest.fixture(autouse=True)
-# def run_before_tests():
-
 create_test_data()
 
 
