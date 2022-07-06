@@ -5,27 +5,40 @@ from models import *
 from data_generator import create_test_data
 from peewee import *
 from tabulate import tabulate
+from fuzzywuzzy import fuzz
 
 
-def search(term):
-    # Search product names and descriptions based on a term (case-insensitive)
+def search(search_term):
+    # Search product names and descriptions
+    # based on a term (case-insensitive)
 
-    # from fuzzysearch import find_near_matches
+    search_results = []
 
-    # my_string = "aaaPATERNaaa"
-    # matches = find_near_matches("PATTERN", my_string, max_l_dist=1)
-
+    # first check if a product name or descriptions contains exact search term
     query = Product.select().where(
-        (Product.name.contains(term)) | (Product.description.contains(term))
+        (Product.name.contains(search_term)) | (Product.description.contains(search_term))
     )
 
     if query.exists():
         for product in query:
-            print("ID:", product.id, product.name, " - ", product.description)
-    else:
-        print(f"no {term} found in products")
+            print("Found product:", product.id, product.name, " - ", product.description)
+            search_results.append(product)
+        return search_results
 
-    return [product for product in query]
+    # else use fuzzy search with a similarity percentage > 70
+    else:
+        query = Product.select()
+        for product in query:
+            name_ratio = fuzz.partial_ratio(search_term.lower(), product.name.lower())
+            descr_ratio = fuzz.partial_ratio(search_term.lower(), product.description.lower())
+            if name_ratio > 70 or descr_ratio > 70:
+                search_results.append(product)
+                print("Found product:", product.id, product.name, " - ", product.description)
+        if len(search_results) >= 1:
+            return search_results
+        else:
+            print("No matches found")
+            return None
 
 
 def list_user_addresses(user_id):

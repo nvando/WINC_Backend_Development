@@ -2,7 +2,6 @@ from peewee import *
 import re
 
 database = SqliteDatabase("test_data.db")
-postcode_pattern = r"^[1-9][0-9]{3}\s?[A-Za-z]{2}$"
 
 
 class BaseModel(Model):
