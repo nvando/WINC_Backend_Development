@@ -1,0 +1,10 @@
+name: Print Hello
+
+on: workflow_dispatch
+jobs:
+  print-hello:
+    runs-on: ubuntu-20.04
+    # The steps that will be excuted
+    steps:
+    - name: Print
+      run: echo "Hello, world!"
